@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="date.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <section class="calendar">
+        <header>
+          <div class="year">2022</div>
+          <div class="month-wrap">
+          <div class="control back">&#8592;</div>
+          <div class="month">Month</div>
+          <div class="control next">&#8594;</div>
+          </div>
+          <div class="week">
+            <div class="day">Пн</div>
+            <div class="day">Вт</div>
+            <div class="day">Ср</div>
+            <div class="day">Чт</div>
+            <div class="day">Пт</div>
+            <div class="day">Сб</div>
+            <div class="day">Вс</div>
+          </div>
+        </header>
+        <div class="dates-wrap">
+          <div class="dates"></div>
+        </div>
+      </section>
+
+      <div class="tiptool">
+        <div class="tiptool-date"></div>
+        <div class="tiptool-price"></div>
+      </div>
+
+      <form action="" method="POST" class="info" name="booking">
+
+        <header class="info-header">
+          <div class="info-date"></div>
+          <div class="info-price"></div>
+        </header>
+        <div class="info-inputs">
+          <input type="text" class="text-input" placeholder="Введите фамилию и имя..." id="name-input" required name="username">
+          <input type="text" class="text-input" placeholder="Введите адрес электронной почты..." id="email-input" required name="email">
+        </div>
+        <div class="check-in-controls">
+          <h5>Время заселения</h4>
+          <input type="radio" id="time-choice1" value="10:00" checked name="time">
+          <label for="time-choice1">10:00</label>
+          <input type="radio" id="time-choice2"  name="time" value="12:00">
+          <label for="time-choice2">12:00</label>
+          <input type="radio" id="time-choice3" name="time" value="14:00">
+          <label for="time-choice3">14:00</label>
+        </div>
+        <div class="duration-control">
+          <div class="info-duration-header"> <h5>Количество дней</h4>
+          <div class="range-output">1</div></div>
+          <input type="range" value="1" name="duration" id="duration-input" min="1" max="14">
+        </div>
+           
+        <div class="total-price">
+          <h5>Общая стоимость</h4>
+          <div class="total-price-output"></div>
+          <input type="hidden" class="total-price-output" disabled name="price">
+         <input class="total-price-submit" type="submit" value="Забронировать">
+        </div>
+      </form>
+      <div class="accepted">✓</div>
+    </div>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="database.js"></script>
+    <script src="date.js"></script>
+  </body>
+</html>

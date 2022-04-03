@@ -1,0 +1,252 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: rgb(211, 211, 211);
+}
+
+.container {
+  margin: 20px auto;
+  max-width: 880px;
+  border: 1px solid rgb(233, 233, 233);
+  display: flex;
+  background-color: rgb(255, 255, 255);
+  padding: 30px;
+  gap: 40px;
+  border-radius: 50px;
+  align-items: flex-start;
+}
+
+.calendar {
+  border: 1px solid rgb(209, 29, 29);
+  border-radius: 10% 10% 5% 5%;
+  overflow: hidden;
+}
+
+.dates-wrap {
+  overflow: hidden;
+}
+
+.dates {
+  display: grid;
+  grid-template-columns: repeat(7, 55px);
+  /* height: 305px; */
+  height: 365px;
+  position: relative;
+  transition: 0.175s ease-in-out;
+}
+
+header {
+  border-bottom: 1px solid rgb(233, 233, 233);
+  background-color: rgb(173, 62, 62);
+  border-radius: 30px 30px 0 0;
+  color: white;
+  text-align: center;
+}
+
+.month-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.year {
+  padding-top: 10px;
+  color: rgb(255, 200, 200);
+}
+
+.month {
+  text-align: center;
+  padding: 3px 0 10px 0;
+  font-size: 20px;
+  width: 100px;
+}
+
+.control {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.week {
+  display: flex;
+  height: 40px;
+  text-align: center;
+  background-color: rgb(68, 68, 85);
+  align-items: center;
+}
+
+.day {
+  width: 50px;
+  color: white;
+}
+
+.date {
+  border-bottom: 1px solid rgb(255, 232, 232);
+  border-right: 1px solid rgb(255, 232, 232);
+  height: 60px;
+  /* height: 50px; */
+  text-align: center;
+  color: rgb(107, 107, 107);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.date:nth-child(7n) {
+  border-right: none;
+}
+
+.number {
+  padding-top: 5px;
+  flex-grow: 1;
+  opacity: 0.3;
+}
+
+.price {
+  color: green;
+  font-size: 14px;
+  padding-top: 3px;
+  width: 90%;
+  margin-bottom: 5px;
+  font-weight: 400;
+  opacity: 0.3;
+}
+
+.info {
+  border: 1px solid rgb(173, 62, 62);
+  border-radius: 20px;
+  padding: 30px 25px;
+  flex-grow: 1;
+  display: none;
+  flex-direction: column;
+  gap: 40px;
+  align-self: stretch;
+}
+
+.info-header {
+  display: flex;
+  background: none;
+  color: rgb(68, 68, 85);
+  gap: 20px;
+  border: none;
+  font-size: 22px;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.tiptool {
+  display: none;
+  position: absolute;
+  background: white;
+  border-radius: 10px;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  box-shadow: 0px 2px 10px -5px rgb(46, 38, 38);
+}
+
+.info-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.text-input {
+  height: 20px;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid rgb(173, 62, 62);
+  padding: 4px;
+}
+
+label {
+  margin-right: 20px;
+}
+
+h5 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: rgb(113, 113, 126);
+}
+
+.info-duration-header > h5,
+.total-price > h5 {
+  margin: 0;
+}
+
+.info-duration-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.range-output {
+  margin-left: 10px;
+  width: 23px;
+  height: 23px;
+  text-align: center;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+#duration-input {
+  width: 100%;
+  -webkit-appearance: none;
+  background-color: rgb(255, 248, 248);
+  height: 7px;
+  border-radius: 5px;
+  border: 1px solid rgb(173, 62, 62);
+}
+
+#duration-input::-webkit-slider-thumb {
+  width: 10px;
+  -webkit-appearance: none;
+  height: 20px;
+  cursor: ew-resize;
+  background: #434343;
+  border-radius: 5px;
+  background-color: rgb(173, 62, 62);
+}
+
+.total-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-price-submit {
+  background-color: rgb(173, 62, 62);
+  border: none;
+  border-radius: 7px;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+}
+
+input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgb(173, 62, 62);
+  transition: 0.2s all linear;
+  outline: none;
+  margin: 0px;
+}
+
+input[type="radio"]:checked {
+  border: 6px solid rgb(173, 62, 62);
+}
+
+.accepted {
+  display: none;
+  color: rgb(68, 184, 68);
+  font-size: 100px;
+  align-self: center;
+  justify-self: center;
+  margin: 0 auto;
+}
