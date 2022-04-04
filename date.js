@@ -14,7 +14,7 @@ let todayDay = date.getDate();
 let prevColored = $(`.date[data-year=${todayYear}][data-month=${todayMonth}]`);
 let form = document.forms.booking;
 
-function calendarCreate() {
+function createCalendar() {
   let number = 1;
   let month = 0;
   let year = startYear;
@@ -22,13 +22,13 @@ function calendarCreate() {
   if (whiteStart === -1) whiteStart = 6;
   let row = 0;
 
-  for (let i = 0; i < 365 * 8; i++) {
+  for (let i = 0; i < 365 * 10; i++) {
     if (i < whiteStart) {
       dates.append(`<div class="date"></div>`);
       continue;
     }
 
-    let info = dataConsecutiveFiller(number, month, year, row, i);
+    let info = fillDataConsecutive(number, month, year, row, i);
 
     dates.append(`<div data-row=${row} data-year=${year} data-month=${month} data-number=${number} class="date">
                     <div data-number=${number} class="number"></div>
@@ -42,9 +42,10 @@ function calendarCreate() {
   }
 }
 
-function dataConsecutiveFiller(number, month, year, row, i) {
+function fillDataConsecutive(number, month, year, row, i) {
   let finalNumber = 31;
-  if ((i + 1) % 7 === 0) row++;
+  let isNewWeek = (i + 1) % 7 === 0;
+  if (isNewWeek) row++;
 
   if (month === 1) {
     finalNumber = 28;
@@ -64,7 +65,7 @@ function dataConsecutiveFiller(number, month, year, row, i) {
   return { number, month, year, row };
 }
 
-function calendarFill() {
+function fillCalendar() {
   $(".number").each(function () {
     $(this).text($(this).attr("data-number"));
   });
@@ -77,10 +78,10 @@ function calendarFill() {
     $(this).text(price + " р.");
   });
 
-  calendarFillDatabase();
+  fillCalendarDatabase();
 }
 
-function calendarFillDatabase() {
+function fillCalendarDatabase() {
   database.forEach((el) => {
     let orderedDay = $(`.date[data-year=${el.year}][data-month=${el.month}][data-number=${el.number}]>.price`);
     orderedDay.text(el.name);
@@ -123,9 +124,63 @@ function colorDates() {
   $(`.date[data-year=${todayYear}][data-month=${todayMonth}]>.number[data-number=${todayDay}]`).css("color", "red");
 }
 
-calendarCreate();
+function sendEmail(adress, username, date, time, duration, price) {
+  Email.send({
+    Host: "smtp.elasticemail.com",
+    Username: "mahendehen@gmail.com",
+    Password: "3120547FF2001D5E346289F0ED1E70F64C06",
+    To: [`${adress}`, "info@itspro.by"],
+    From: "foleitan@gmail.com",
+    Subject: "Бронирование аппартаментов",
+    Body: `<p>Уважаемый, ${username}, вы успешно забронировали аппартаменты.</p> <p>Заселение ${date} в ${time} на срок ${duration} дней.</p><p>Стоимость составила ${price}</p>`,
+  }).then((message) => {
+    console.log(message);
+  });
+}
 
-calendarFill();
+function clearInfoInputs() {
+  form.duration.value = 1;
+  form.time.value = "10:00";
+  form.username.value = "";
+  form.email.value = "";
+  $(".range-output").text(1);
+
+  $(".info").css("display", "none");
+  $(".accepted").css({ display: "block" });
+}
+
+function changeDateState(thisDate) {
+  $(".accepted").css({ display: "none" });
+  $(prevClick).css({ transform: "", outline: "", background: "white", borderRadius: "" });
+  thisDate.css({ transform: "scale(1.3)", outline: "3px solid rgb(253, 214, 214)", background: "white", borderRadius: "20%" });
+  prevClick = thisDate;
+}
+
+function showInfo(thisDate, price) {
+  $(".info").css("display", "flex");
+  $(".info-date").text(thisDate.attr("data-year") + ", " + monthsList[thisDate.attr("data-month")] + ", " + thisDate.attr("data-number"));
+  $(".info-price").text(price);
+  $(".total-price-output").text(price);
+}
+
+function calculatePrice(thisInput) {
+  let totalPrice = 0;
+  for (let i = 0; i < thisInput.val(); i++) totalPrice += parseInt($(".date").eq(indexOfChosen + i).children(".price").text());
+  $(".total-price-output").text(totalPrice + " р.");
+  $(".total-price-output").val(totalPrice + " р.");
+}
+
+function showTiptool(event, thisDate) {
+  if (!thisDate.children(".price").text()) return true;
+  thisDate.css("background", "rgb(253, 214, 214)");
+  tiptool.css({ display: "flex", top: event.clientY - 80, left: event.clientX + 10 });
+  $(".tiptool-date").text(thisDate.attr("data-year") + " " + monthsList[thisDate.attr("data-month")] + " " + thisDate.attr("data-number"));
+  $(".tiptool-price").text(thisDate.children(".price").text());
+}
+
+createCalendar();
+
+fillCalendar();
 
 colorDates();
 
@@ -143,11 +198,7 @@ $(".back").click(() => {
 
 $(".date").hover(
   function (evt) {
-    if (!$(this).children(".price").text()) return true;
-    $(this).css("background", "rgb(253, 214, 214)");
-    tiptool.css({ display: "flex", top: evt.clientY - 80, left: evt.clientX + 10 });
-    $(".tiptool-date").text($(this).attr("data-year") + " " + monthsList[$(this).attr("data-month")] + " " + $(this).attr("data-number"));
-    $(".tiptool-price").text($(this).children(".price").text());
+    showTiptool(evt, $(this));
   },
   function () {
     $(this).css("background", "white");
@@ -161,47 +212,26 @@ $(".date").click(function () {
   if (!price || $(this).attr("data-booked")) return true;
   indexOfChosen = $(this).index();
 
-  $(".accepted").css({ display: "none" });
-  $(prevClick).css({ transform: "", outline: "", background: "white", borderRadius: "" });
-  prevClick = $(this);
-  $(".info").css("display", "flex");
-  $(".info-date").text($(this).attr("data-year") + ", " + monthsList[$(this).attr("data-month")] + ", " + $(this).attr("data-number"));
-  $(".info-price").text(price);
-  $(this).css({ transform: "scale(1.3)", outline: "3px solid rgb(253, 214, 214)", background: "white", borderRadius: "20%" });
-  $(".total-price-output").text(price);
+  changeDateState($(this));
+  showInfo($(this), price);
 });
 
 $("#duration-input").on("input", function () {
   $(".range-output").text($(this).val());
-  let totalPrice = 0;
-  for (let i = 0; i < $(this).val(); i++) totalPrice += parseInt( $(".date").eq(indexOfChosen + i).children(".price").text());
-  $(".total-price-output").text(totalPrice + " р.");
-  $(".total-price-output").val(totalPrice + " р.");
+  calculatePrice($(this));
 });
 
 $("form").submit(function (e) {
   e.preventDefault();
+  sendEmail(form.email.value, form.username.value, $(".info-date").text(), form.time.value, form.duration.value, form.price.value);
+  
   let bookedDay = $(".date").eq(indexOfChosen);
   let number = parseInt(bookedDay.attr("data-number"));
   let month = parseInt(bookedDay.attr("data-month"));
   let year = parseInt(bookedDay.attr("data-year"));
 
-  Email.send({
-    Host: "smtp.elasticemail.com",
-    Username: "mahendehen@gmail.com",
-    Password: "3120547FF2001D5E346289F0ED1E70F64C06",
-    To: [`${form.email.value}`, "info@itspro.by"],
-    From: "foleitan@gmail.com",
-    Subject: "Бронирование аппартаментов",
-    Body: `<p>Уважаемый, ${form.username.value}, вы успешно забронировали аппартаменты.</p> <p>Заселение ${$(".info-date").text()} в ${
-      form.time.value
-    } на срок ${form.duration.value} дней.</p><p>Стоимость составила ${form.price.value}</p>`,
-  }).then((message) => {
-    console.log(message);
-  });
-
   for (let i = 0; i < form.duration.value; i++) {
-    let info = dataConsecutiveFiller(number, month, year, 0, i);
+    let info = fillDataConsecutive(number, month, year, 0, i);
 
     database.push({
       year,
@@ -215,14 +245,6 @@ $("form").submit(function (e) {
     month = info.month;
     year = info.year;
   }
-  calendarFillDatabase();
-
-  form.duration.value = 1;
-  form.time.value = "10:00";
-  form.username.value = "";
-  form.email.value = "";
-  $(".range-output").text(1);
-
-  $(".info").css("display", "none");
-  $(".accepted").css({ display: "block" });
+  fillCalendarDatabase();
+  clearInfoInputs();
 });
