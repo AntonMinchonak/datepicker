@@ -39,8 +39,8 @@ let database = [
   {
     year: 2022,
     month: 3,
-    number: 3,
+    number: 6,
     name: "Иван Иванов",
-    time: "",
+    time: "2",
   },
 ];

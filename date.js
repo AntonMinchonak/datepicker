@@ -82,7 +82,10 @@ function fillCalendar() {
 }
 
 function fillCalendarDatabase() {
-  database.forEach((el) => {
+  if (!localStorage.database) localStorage.setItem("database", JSON.stringify(database));
+  let loadedDB = JSON.parse(localStorage.database);
+
+  loadedDB.forEach((el) => {
     let orderedDay = $(`.date[data-year=${el.year}][data-month=${el.month}][data-number=${el.number}]>.price`);
     orderedDay.text(el.name);
     orderedDay.css({ color: "rgb(173, 62, 62)", fontSize: 11 });
@@ -161,11 +164,35 @@ function showInfo(thisDate, price) {
   $(".info-date").text(thisDate.attr("data-year") + ", " + monthsList[thisDate.attr("data-month")] + ", " + thisDate.attr("data-number"));
   $(".info-price").text(price);
   $(".total-price-output").text(price);
+  $("input[type=radio]").css("display", "");
+  $("label").css("display", "");
+
+  let beforeOrdered = $(".date").eq(thisDate.index() - 1);
+  JSON.parse(localStorage.database).forEach((el) => {
+    if (el.year == beforeOrdered.attr("data-year") && el.month == beforeOrdered.attr("data-month") && el.number == beforeOrdered.attr("data-number")) {
+      if (el.time === "1") {
+        $("input[type=radio]").eq(0).css("display", "none");
+        $("label").eq(0).css("display", "none");
+      }
+      if (el.time === "2") {
+        $("input[type=radio]").eq(0).css("display", "none");
+        $("input[type=radio]").eq(1).css("display", "none");
+        $("label").eq(0).css("display", "none");
+        $("label").eq(1).css("display", "none");
+      }
+    }
+  });
 }
 
 function calculatePrice(thisInput) {
   let totalPrice = 0;
-  for (let i = 0; i < thisInput.val(); i++) totalPrice += parseInt($(".date").eq(indexOfChosen + i).children(".price").text());
+  for (let i = 0; i < thisInput.val(); i++)
+    totalPrice += parseInt(
+      $(".date")
+        .eq(indexOfChosen + i)
+        .children(".price")
+        .text()
+    );
   $(".total-price-output").text(totalPrice + " р.");
   $(".total-price-output").val(totalPrice + " р.");
 }
@@ -224,16 +251,16 @@ $("#duration-input").on("input", function () {
 $("form").submit(function (e) {
   e.preventDefault();
   sendEmail(form.email.value, form.username.value, $(".info-date").text(), form.time.value, form.duration.value, form.price.value);
-  
+
   let bookedDay = $(".date").eq(indexOfChosen);
   let number = parseInt(bookedDay.attr("data-number"));
   let month = parseInt(bookedDay.attr("data-month"));
   let year = parseInt(bookedDay.attr("data-year"));
-
+  let store = JSON.parse(localStorage.database);
   for (let i = 0; i < form.duration.value; i++) {
     let info = fillDataConsecutive(number, month, year, 0, i);
 
-    database.push({
+    store.push({
       year,
       month,
       number,
@@ -245,6 +272,9 @@ $("form").submit(function (e) {
     month = info.month;
     year = info.year;
   }
+
+  store = JSON.stringify(store);
+  localStorage.setItem("database", store);
   fillCalendarDatabase();
   clearInfoInputs();
 });
