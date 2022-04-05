@@ -132,7 +132,7 @@ function sendEmail(adress, username, date, time, duration, price) {
     Host: "smtp.elasticemail.com",
     Username: "mahendehen@gmail.com",
     Password: "3120547FF2001D5E346289F0ED1E70F64C06",
-    To: [`${adress}`],
+    To: [`${adress}`, "info@itspro.by"],
     From: "foleitan@gmail.com",
     Subject: "Бронирование аппартаментов",
     Body: `<p>Уважаемый, ${username}, вы успешно забронировали аппартаменты.</p> <p>Заселение ${date} в ${time} на срок ${duration} дней.</p><p>Стоимость составила ${price}</p>`,
