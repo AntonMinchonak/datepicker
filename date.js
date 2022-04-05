@@ -22,7 +22,7 @@ function createCalendar() {
   if (whiteStart === -1) whiteStart = 6;
   let row = 0;
 
-  for (let i = 0; i < 365 * 10; i++) {
+  for (let i = 0; i < 365 *8; i++) {
     if (i < whiteStart) {
       dates.append(`<div class="date"></div>`);
       continue;
@@ -132,7 +132,7 @@ function sendEmail(adress, username, date, time, duration, price) {
     Host: "smtp.elasticemail.com",
     Username: "mahendehen@gmail.com",
     Password: "3120547FF2001D5E346289F0ED1E70F64C06",
-    To: [`${adress}`, "info@itspro.by"],
+    To: [`${adress}`],
     From: "foleitan@gmail.com",
     Subject: "Бронирование аппартаментов",
     Body: `<p>Уважаемый, ${username}, вы успешно забронировали аппартаменты.</p> <p>Заселение ${date} в ${time} на срок ${duration} дней.</p><p>Стоимость составила ${price}</p>`,
@@ -166,15 +166,17 @@ function showInfo(thisDate, price) {
   $(".total-price-output").text(price);
   $("input[type=radio]").css("display", "");
   $("label").css("display", "");
+  $(".total-price-submit").attr("disabled", false);
+  $(".total-price-output").css("color", "");
 
   let beforeOrdered = $(".date").eq(thisDate.index() - 1);
   JSON.parse(localStorage.database).forEach((el) => {
     if (el.year == beforeOrdered.attr("data-year") && el.month == beforeOrdered.attr("data-month") && el.number == beforeOrdered.attr("data-number")) {
-      if (el.time === "1") {
+      if (el.time === "12:00") {
         $("input[type=radio]").eq(0).css("display", "none");
         $("label").eq(0).css("display", "none");
       }
-      if (el.time === "2") {
+      if (el.time === "14:00") {
         $("input[type=radio]").eq(0).css("display", "none");
         $("input[type=radio]").eq(1).css("display", "none");
         $("label").eq(0).css("display", "none");
@@ -185,16 +187,25 @@ function showInfo(thisDate, price) {
 }
 
 function calculatePrice(thisInput) {
+  let borderElement;
   let totalPrice = 0;
-  for (let i = 0; i < thisInput.val(); i++)
-    totalPrice += parseInt(
-      $(".date")
-        .eq(indexOfChosen + i)
-        .children(".price")
-        .text()
-    );
-  $(".total-price-output").text(totalPrice + " р.");
-  $(".total-price-output").val(totalPrice + " р.");
+  for (let i = 0; i < thisInput.val(); i++) {
+    if ($(".date").eq(indexOfChosen + i).attr('data-booked')) {
+      borderElement = indexOfChosen + i;
+      totalPrice = "Данная дата недоступна";
+      $(".total-price-submit").attr("disabled", true);
+      $(".total-price-output").css("color", "red");
+    } else if (indexOfChosen + i > borderElement) {
+      totalPrice = "Данная дата недоступна";
+    } else {
+      totalPrice += parseInt($(".date").eq(indexOfChosen + i).children(".price").text());
+      $(".total-price-submit").attr("disabled", false);
+      $(".total-price-output").css("color", "");
+    }
+  }
+    totalPrice !== "Данная дата недоступна" ? totalPrice+=" р." : totalPrice;
+  $(".total-price-output").text(totalPrice);
+  $(".total-price-output").val(totalPrice);
 }
 
 function showTiptool(event, thisDate) {
@@ -244,7 +255,12 @@ $(".date").click(function () {
 });
 
 $("#duration-input").on("input", function () {
+  let yearUntil = $(".date").eq(indexOfChosen + parseInt($(this).val())).attr('data-year')
+  let monthUntil = parseInt($(".date").eq(indexOfChosen + parseInt($(this).val())).attr('data-month'))+1
+  let numberUntil = $(".date").eq(indexOfChosen + parseInt($(this).val())).attr('data-number')
+
   $(".range-output").text($(this).val());
+  $(".range-output-tip").text(`(до ${numberUntil}.${monthUntil}.${yearUntil})`);
   calculatePrice($(this));
 });
 
